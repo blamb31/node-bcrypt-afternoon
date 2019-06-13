@@ -7,7 +7,11 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      user: {},
+      user: [
+        {
+        username: ''
+        }
+    ],
     };
     this.updateUser = this.updateUser.bind(this);
   }

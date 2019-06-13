@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Header.css';
+import Axios from 'axios'
 
 export default class Header extends Component {
   constructor() {
@@ -32,7 +33,26 @@ export default class Header extends Component {
   }
 
   register() {
-    // axios POST to /auth/register here
+    const {username, password, isAdmin} = this.state
+    const user = {
+      username,
+      password,
+      isAdmin
+    }
+    
+    Axios.post('/auth/register', user).then( res => {
+      this.setState({
+        username: '',
+        password: ''
+      })
+      this.props.updateUser(res.data)
+    }).catch( (err) =>{
+      this.setState({
+        username: '',
+        password: ''
+      })
+      alert(err.response.request.response)
+    })
   }
 
   logout() {
@@ -41,13 +61,15 @@ export default class Header extends Component {
 
   render() {
     const { username, password } = this.state;
-    const { user } = this.props;
+    const { username:newUsername } = this.props.user[0];
     return (
       <div className="Header">
         <div className="title">Dragon's Lair</div>
-        {user.username ? (
+        { console.log(11111111, newUsername)}
+        {newUsername !== '' ? (
+          
           <div className="welcomeMessage">
-            <h4>{user.username}, welcome to the dragon's lair</h4>
+            <h4>{newUsername}, welcome to the dragon's lair</h4>
             <button type="submit" onClick={this.logout}>
               Logout
             </button>
