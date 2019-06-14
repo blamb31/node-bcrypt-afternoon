@@ -5,12 +5,16 @@ require('dotenv').config()
 const massive = require('massive')
 
 const {SERVER_PORT, SESSION_SECRET, CONNECTION_STRING} = process.env
-const autCtlr = require('./controllers/auth')
+const authCtlr = require('./controllers/auth')
+const treasureCtrl = require('./controllers/treasureController')
+const auth = require('./middleware/authMiddleware')
+
 
 app.use(express.json())
 
 massive(CONNECTION_STRING).then( (db) => {
     app.set('db',db)
+    app.listen(SERVER_PORT, () => console.log(`Listening on port: ${SERVER_PORT}`))
 })
 
 app.use(session({
@@ -22,6 +26,11 @@ app.use(session({
     }
 }))
 
-app.post('/auth/register', autCtlr.register)
+app.post('/auth/register', authCtlr.register)
+app.post('/auth/login', authCtlr.login)
+app.get('/auth/logout', authCtlr.logout)
 
-app.listen(SERVER_PORT, () => console.log(`Listening on port: ${SERVER_PORT}`))
+app.get('/api/treasure/dragon', treasureCtrl.dragonTreasure)
+app.get('/api/treasure/user',auth.usersOnly, treasureCtrl.getUserTreasure)
+app.post('/api/treasure/user',auth.usersOnly, treasureCtrl.addUserTreasure)
+app.get('/api/treasure/all',auth.usersOnly,auth.adminsOnly, treasureCtrl.getAllTreasure)

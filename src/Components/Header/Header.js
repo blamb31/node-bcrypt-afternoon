@@ -29,8 +29,23 @@ export default class Header extends Component {
   }
 
   login() {
-    // axios POST to /auth/login here
+    const {username, password} = this.state
+    const user = {
+      username,
+      password
+    }
+    Axios.post('/auth/login', user).then( res => {
+      this.setState({
+        username: '',
+        password: ''
+      })
+      console.log(99999, res.data)
+      this.props.updateUser(res.data)
+    }).catch( (err) =>{
+      alert(err)
+    })
   }
+  
 
   register() {
     const {username, password, isAdmin} = this.state
@@ -45,6 +60,7 @@ export default class Header extends Component {
         username: '',
         password: ''
       })
+      console.log(res.data)
       this.props.updateUser(res.data)
     }).catch( (err) =>{
       this.setState({
@@ -56,20 +72,21 @@ export default class Header extends Component {
   }
 
   logout() {
-    // axios GET to /auth/logout here
+    Axios.get('/auth/logout').then(() => this.props.updateUser({})).catch( (err) => {
+      console.log(err)
+    })
   }
 
   render() {
     const { username, password } = this.state;
-    const { username:newUsername } = this.props.user[0];
+    const { user } = this.props
     return (
       <div className="Header">
         <div className="title">Dragon's Lair</div>
-        { console.log(11111111, newUsername)}
-        {newUsername !== '' ? (
+        {user.username ? (
           
           <div className="welcomeMessage">
-            <h4>{newUsername}, welcome to the dragon's lair</h4>
+            <h4>{user.username}, welcome to the dragon's lair</h4>
             <button type="submit" onClick={this.logout}>
               Logout
             </button>
